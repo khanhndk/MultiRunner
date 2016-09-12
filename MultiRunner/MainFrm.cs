@@ -149,7 +149,21 @@ namespace MultiRunner
             tick_busy = true;
             //tWait.Enabled = false;
 
-            stSum.Text = "";
+            for (int i = 0; i < cpulist.Count; i++)
+            {
+                if (busylist[i]) continue;
+                if (queuelist[i].Count != 0) continue;
+                for (int j = 0; j < cpulist.Count; j++)
+                {
+                    if (busylist[j]) continue;
+                    if (queuelist[j].Count > 1)
+                    {
+                        queuelist[i].Enqueue(queuelist[j].Dequeue());
+                    }
+                }
+            }
+
+                stSum.Text = "";
             for (int i = 0; i < cpulist.Count; i++)
             {
                 if (busylist[i]) continue;
