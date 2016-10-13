@@ -40,13 +40,14 @@
             this.stSum = new System.Windows.Forms.ToolStripStatusLabel();
             this.tWait = new System.Windows.Forms.Timer(this.components);
             this.nWait = new System.Windows.Forms.NumericUpDown();
+            this.btnStop = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nWait)).BeginInit();
             this.SuspendLayout();
             // 
             // btnImport
             // 
-            this.btnImport.Location = new System.Drawing.Point(12, 83);
+            this.btnImport.Location = new System.Drawing.Point(12, 107);
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(75, 23);
             this.btnImport.TabIndex = 0;
@@ -60,9 +61,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstCommands.FormattingEnabled = true;
-            this.lstCommands.Location = new System.Drawing.Point(12, 147);
+            this.lstCommands.Location = new System.Drawing.Point(12, 173);
             this.lstCommands.Name = "lstCommands";
-            this.lstCommands.Size = new System.Drawing.Size(444, 199);
+            this.lstCommands.Size = new System.Drawing.Size(444, 212);
             this.lstCommands.TabIndex = 1;
             // 
             // lstFiles
@@ -72,16 +73,17 @@
             this.lstFiles.FormattingEnabled = true;
             this.lstFiles.Location = new System.Drawing.Point(93, 12);
             this.lstFiles.Name = "lstFiles";
-            this.lstFiles.Size = new System.Drawing.Size(363, 121);
+            this.lstFiles.Size = new System.Drawing.Size(363, 147);
             this.lstFiles.TabIndex = 2;
             // 
             // lstCPUs
             // 
-            this.lstCPUs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.lstCPUs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.lstCPUs.FormattingEnabled = true;
             this.lstCPUs.Location = new System.Drawing.Point(462, 12);
             this.lstCPUs.Name = "lstCPUs";
-            this.lstCPUs.Size = new System.Drawing.Size(120, 304);
+            this.lstCPUs.Size = new System.Drawing.Size(120, 349);
             this.lstCPUs.TabIndex = 3;
             // 
             // btnRun
@@ -96,7 +98,7 @@
             // 
             // btnPause
             // 
-            this.btnPause.Location = new System.Drawing.Point(12, 42);
+            this.btnPause.Location = new System.Drawing.Point(12, 41);
             this.btnPause.Name = "btnPause";
             this.btnPause.Size = new System.Drawing.Size(75, 23);
             this.btnPause.TabIndex = 5;
@@ -105,7 +107,7 @@
             // 
             // btnRemove
             // 
-            this.btnRemove.Location = new System.Drawing.Point(12, 110);
+            this.btnRemove.Location = new System.Drawing.Point(12, 136);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(75, 23);
             this.btnRemove.TabIndex = 7;
@@ -117,7 +119,7 @@
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stSum});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 355);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 389);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(594, 22);
             this.statusStrip1.TabIndex = 8;
@@ -137,12 +139,13 @@
             // 
             // nWait
             // 
+            this.nWait.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.nWait.Increment = new decimal(new int[] {
             100,
             0,
             0,
             0});
-            this.nWait.Location = new System.Drawing.Point(462, 326);
+            this.nWait.Location = new System.Drawing.Point(462, 366);
             this.nWait.Maximum = new decimal(new int[] {
             50000,
             0,
@@ -160,11 +163,22 @@
             0});
             this.nWait.ValueChanged += new System.EventHandler(this.nWait_ValueChanged);
             // 
+            // btnStop
+            // 
+            this.btnStop.Location = new System.Drawing.Point(12, 70);
+            this.btnStop.Name = "btnStop";
+            this.btnStop.Size = new System.Drawing.Size(75, 23);
+            this.btnStop.TabIndex = 10;
+            this.btnStop.Text = "Stop";
+            this.btnStop.UseVisualStyleBackColor = true;
+            this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
+            // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(594, 377);
+            this.ClientSize = new System.Drawing.Size(594, 411);
+            this.Controls.Add(this.btnStop);
             this.Controls.Add(this.nWait);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.btnRemove);
@@ -198,6 +212,7 @@
         private System.Windows.Forms.ToolStripStatusLabel stSum;
         private System.Windows.Forms.Timer tWait;
         private System.Windows.Forms.NumericUpDown nWait;
+        private System.Windows.Forms.Button btnStop;
     }
 }
 

@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Management;
 using System.Text;
 using System.Windows.Forms;
 
@@ -21,6 +22,7 @@ namespace MultiRunner
         string[] current_cmdlist;
         List<Queue<string>> queuelist;
         List<bool> busylist;
+        List<Process> processlist;
         int currentfile;
 
         void FillListCPUs()
@@ -74,6 +76,7 @@ namespace MultiRunner
             p.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             p.EnableRaisingEvents = true;
             p.Exited += P_Exited;
+            processlist[i] = p;
             p.Start();
         }
 
@@ -96,15 +99,21 @@ namespace MultiRunner
             cpulist = new List<int>();
             queuelist = new List<Queue<string>>();
             busylist = new List<bool>();
+            processlist = new List<Process>();
         }
 
         private void btnImport_Click(object sender, EventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Multiselect = true;
             if (dlg.ShowDialog() != DialogResult.OK)
                 return;
-            filelist.Add(dlg.FileName);
-            lstFiles.Items.Add(Path.GetFileName(dlg.FileName));
+            foreach (string filename in dlg.FileNames)
+            {
+                filelist.Add(filename);
+                lstFiles.Items.Add(Path.GetFileName(filename));
+            }
+
         }
 
         private void btnRemove_Click(object sender, EventArgs e)
@@ -126,6 +135,7 @@ namespace MultiRunner
             cpulist.Clear();
             queuelist.Clear();
             busylist.Clear();
+            processlist.Clear();
             lstCommands.Items.Clear();
             foreach (int k in lstCPUs.CheckedIndices)
             {
@@ -133,6 +143,7 @@ namespace MultiRunner
                 queuelist.Add(new Queue<string>());
                 lstCommands.Items.Add("");
                 busylist.Add(false);
+                processlist.Add(null);
             }
             current_cmdlist = new string[cpulist.Count];
             
@@ -159,6 +170,7 @@ namespace MultiRunner
                     if (queuelist[j].Count > 1)
                     {
                         queuelist[i].Enqueue(queuelist[j].Dequeue());
+                        break;
                     }
                 }
             }
@@ -196,6 +208,43 @@ namespace MultiRunner
         private void nWait_ValueChanged(object sender, EventArgs e)
         {
             tWait.Interval = (int)nWait.Value;
+        }
+
+        private static void KillProcessAndChildrens(int pid)
+        {
+            ManagementObjectSearcher processSearcher = new ManagementObjectSearcher
+              ("Select * From Win32_Process Where ParentProcessID=" + pid);
+            ManagementObjectCollection processCollection = processSearcher.Get();
+
+            try
+            {
+                Process proc = Process.GetProcessById(pid);
+                if (!proc.HasExited) proc.Kill();
+            }
+            catch (ArgumentException)
+            {
+                // Process already exited.
+            }
+
+            if (processCollection != null)
+            {
+                foreach (ManagementObject mo in processCollection)
+                {
+                    KillProcessAndChildrens(Convert.ToInt32(mo["ProcessID"])); 
+                    //kill child processes(also kills childrens of childrens etc.)
+                }
+            }
+        }
+
+        private void btnStop_Click(object sender, EventArgs e)
+        {
+            if(MessageBox.Show("Do you want to stop?","MultiRunner", MessageBoxButtons.YesNo) 
+                == DialogResult.Yes)
+            {
+                tWait.Enabled = false;
+                for (int i = 0; i < processlist.Count; i++)
+                    KillProcessAndChildrens(processlist[i].Id);
+            }
         }
     }
 }
