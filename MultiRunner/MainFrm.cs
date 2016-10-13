@@ -210,6 +210,7 @@ namespace MultiRunner
             tWait.Interval = (int)nWait.Value;
         }
 
+        //ref: http://stackoverflow.com/questions/30249873/process-kill-doesnt-seem-to-kill-the-process
         private static void KillProcessAndChildrens(int pid)
         {
             ManagementObjectSearcher processSearcher = new ManagementObjectSearcher
