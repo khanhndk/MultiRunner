@@ -41,13 +41,14 @@
             this.tWait = new System.Windows.Forms.Timer(this.components);
             this.nWait = new System.Windows.Forms.NumericUpDown();
             this.btnStop = new System.Windows.Forms.Button();
+            this.btnResume = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nWait)).BeginInit();
             this.SuspendLayout();
             // 
             // btnImport
             // 
-            this.btnImport.Location = new System.Drawing.Point(12, 107);
+            this.btnImport.Location = new System.Drawing.Point(12, 133);
             this.btnImport.Name = "btnImport";
             this.btnImport.Size = new System.Drawing.Size(75, 23);
             this.btnImport.TabIndex = 0;
@@ -61,9 +62,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstCommands.FormattingEnabled = true;
-            this.lstCommands.Location = new System.Drawing.Point(12, 173);
+            this.lstCommands.Location = new System.Drawing.Point(12, 199);
             this.lstCommands.Name = "lstCommands";
-            this.lstCommands.Size = new System.Drawing.Size(444, 212);
+            this.lstCommands.Size = new System.Drawing.Size(444, 186);
             this.lstCommands.TabIndex = 1;
             // 
             // lstFiles
@@ -73,7 +74,7 @@
             this.lstFiles.FormattingEnabled = true;
             this.lstFiles.Location = new System.Drawing.Point(93, 12);
             this.lstFiles.Name = "lstFiles";
-            this.lstFiles.Size = new System.Drawing.Size(363, 147);
+            this.lstFiles.Size = new System.Drawing.Size(363, 173);
             this.lstFiles.TabIndex = 2;
             // 
             // lstCPUs
@@ -85,6 +86,7 @@
             this.lstCPUs.Name = "lstCPUs";
             this.lstCPUs.Size = new System.Drawing.Size(120, 349);
             this.lstCPUs.TabIndex = 3;
+            this.lstCPUs.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.lstCPUs_ItemCheck);
             // 
             // btnRun
             // 
@@ -104,10 +106,11 @@
             this.btnPause.TabIndex = 5;
             this.btnPause.Text = "Pause";
             this.btnPause.UseVisualStyleBackColor = true;
+            this.btnPause.Click += new System.EventHandler(this.btnPause_Click);
             // 
             // btnRemove
             // 
-            this.btnRemove.Location = new System.Drawing.Point(12, 136);
+            this.btnRemove.Location = new System.Drawing.Point(12, 162);
             this.btnRemove.Name = "btnRemove";
             this.btnRemove.Size = new System.Drawing.Size(75, 23);
             this.btnRemove.TabIndex = 7;
@@ -165,7 +168,7 @@
             // 
             // btnStop
             // 
-            this.btnStop.Location = new System.Drawing.Point(12, 70);
+            this.btnStop.Location = new System.Drawing.Point(12, 99);
             this.btnStop.Name = "btnStop";
             this.btnStop.Size = new System.Drawing.Size(75, 23);
             this.btnStop.TabIndex = 10;
@@ -173,11 +176,22 @@
             this.btnStop.UseVisualStyleBackColor = true;
             this.btnStop.Click += new System.EventHandler(this.btnStop_Click);
             // 
+            // btnResume
+            // 
+            this.btnResume.Location = new System.Drawing.Point(12, 70);
+            this.btnResume.Name = "btnResume";
+            this.btnResume.Size = new System.Drawing.Size(75, 23);
+            this.btnResume.TabIndex = 11;
+            this.btnResume.Text = "Resume";
+            this.btnResume.UseVisualStyleBackColor = true;
+            this.btnResume.Click += new System.EventHandler(this.btnResume_Click);
+            // 
             // MainFrm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(594, 411);
+            this.Controls.Add(this.btnResume);
             this.Controls.Add(this.btnStop);
             this.Controls.Add(this.nWait);
             this.Controls.Add(this.statusStrip1);
@@ -213,6 +227,7 @@
         private System.Windows.Forms.Timer tWait;
         private System.Windows.Forms.NumericUpDown nWait;
         private System.Windows.Forms.Button btnStop;
+        private System.Windows.Forms.Button btnResume;
     }
 }
 

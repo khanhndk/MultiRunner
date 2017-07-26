@@ -8,6 +8,7 @@ using System.IO;
 using System.Management;
 using System.Text;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace MultiRunner
 {
@@ -19,7 +20,7 @@ namespace MultiRunner
         }
         List<string> filelist;
         List<int> cpulist;
-        string[] current_cmdlist;
+        List<string> current_cmdlist;
         List<Queue<string>> queuelist;
         List<bool> busylist;
         List<Process> processlist;
@@ -85,21 +86,28 @@ namespace MultiRunner
             Process p = (Process)sender;
             string cpuid = p.StartInfo.Arguments.Split(new char[] { ' ' }, 6)[4];
             int cpu = (int)(Math.Log(Convert.ToInt32(cpuid, 16))/Math.Log(2));
-            busylist[(cpulist.IndexOf(cpu))] = false;
+            int idx_cpulist = cpulist.IndexOf(cpu);
+            if(idx_cpulist >= 0) 
+                //if it is not in list, it mean we don't not use this core again, hence 
+                // we do not need to set it to false
+                busylist[idx_cpulist] = false;
 
             //did not work
             //if (!tWait.Enabled)
             //    tWait.Start();
         }
 
+        bool main_load = false;
         private void MainFrm_Load(object sender, EventArgs e)
         {
+            main_load = true;
             FillListCPUs();
             filelist = new List<string>();
             cpulist = new List<int>();
             queuelist = new List<Queue<string>>();
             busylist = new List<bool>();
             processlist = new List<Process>();
+            main_load = false;
         }
 
         private void btnImport_Click(object sender, EventArgs e)
@@ -125,6 +133,7 @@ namespace MultiRunner
             lstFiles.Items.RemoveAt(k);
         }
 
+        bool is_running = false;
         private void btnRun_Click(object sender, EventArgs e)
         {
             if (lstFiles.Items.Count == 0)
@@ -145,8 +154,9 @@ namespace MultiRunner
                 busylist.Add(false);
                 processlist.Add(null);
             }
-            current_cmdlist = new string[cpulist.Count];
-            
+            current_cmdlist = new List<string>(new string[cpulist.Count]);
+
+            is_running = true;
 
             currentfile = 0;
             Import2Queue();
@@ -154,8 +164,10 @@ namespace MultiRunner
         }
 
         bool tick_busy = false;
+        bool tick_pause = false;
         private void tWait_Tick(object sender, EventArgs e)
         {
+            if (tick_pause) return;
             if (tick_busy) return;
             tick_busy = true;
             //tWait.Enabled = false;
@@ -166,7 +178,8 @@ namespace MultiRunner
                 if (queuelist[i].Count != 0) continue;
                 for (int j = 0; j < cpulist.Count; j++)
                 {
-                    if (busylist[j]) continue;
+                    //no need to wait until the queue finish the current job
+                    //if (busylist[j]) continue;
                     if (queuelist[j].Count > 1)
                     {
                         queuelist[i].Enqueue(queuelist[j].Dequeue());
@@ -175,7 +188,7 @@ namespace MultiRunner
                 }
             }
 
-                stSum.Text = "";
+            stSum.Text = "";
             for (int i = 0; i < cpulist.Count; i++)
             {
                 if (busylist[i]) continue;
@@ -246,6 +259,52 @@ namespace MultiRunner
                 for (int i = 0; i < processlist.Count; i++)
                     KillProcessAndChildrens(processlist[i].Id);
             }
+            is_running = false;
+        }
+
+        private void btnPause_Click(object sender, EventArgs e)
+        {
+            tick_pause = true;
+        }
+
+        private void btnResume_Click(object sender, EventArgs e)
+        {
+            tick_pause = false;
+        }
+
+        private void lstCPUs_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            if (main_load) return;
+            if (!is_running) return;
+
+            tick_pause = true;
+            if (e.NewValue == CheckState.Unchecked)
+            {
+                int idx_cpulist = cpulist.IndexOf(e.Index);
+                int cpu_idx = e.Index;
+                int idx_to_move = (idx_cpulist + 1) % cpulist.Count;
+                while (queuelist[idx_cpulist].Count > 0)
+                    queuelist[idx_to_move].Enqueue(queuelist[idx_cpulist].Dequeue());
+
+                cpulist.Remove(e.Index);
+                queuelist.RemoveAt(idx_cpulist);
+                busylist.RemoveAt(idx_cpulist);
+                processlist.RemoveAt(idx_cpulist);
+                current_cmdlist.RemoveAt(idx_cpulist);
+
+                lstCommands.Items.RemoveAt(idx_cpulist);
+            }
+            else if (e.NewValue == CheckState.Checked)
+            {
+                cpulist.Add(e.Index);
+                queuelist.Add(new Queue<string>());
+                busylist.Add(false);
+                processlist.Add(null);
+                current_cmdlist.Add("");
+
+                lstCommands.Items.Add("");
+            }
+            tick_pause = false;
         }
     }
 }
